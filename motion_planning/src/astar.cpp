@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
   
   FILE *gp;
   gp = popen("gnuplot -persist", "w");
+  fprintf(gp, "set terminal png\n");
+  fprintf(gp, "set output 'astar.png'\n");
   fprintf(gp, "set nokey\n");
   fprintf(gp, "set noborder\n");
   fprintf(gp, "set noxtics\n");
