@@ -43,18 +43,27 @@ int main(int argc, char** argv) {
   Node start(3, 3);
   Node goal(5, 30);
 
+	bool enable_save = false;
   for(int i = 0; i < argc; i++)
   {
-    if (std::string(argv[i]) == "-start")
+    if (string(argv[i]) == "-start")
     {
       start.x = std::stoi(argv[i+1]);
       start.y = std::stoi(argv[i+2]);
     }
-    if (std::string(argv[i]) == "-goal")
+    if (string(argv[i]) == "-goal")
     {
       goal.x = std::stoi(argv[i+1]);
       goal.y = std::stoi(argv[i+2]);
     }
+		if (string(argv[i]) == "-save")
+		{
+			if(argv[i+1] == "true")
+				enable_save = true;
+			else
+				enable_save = false;
+		}
+
   }
 
   vector<Node> path;
@@ -65,9 +74,12 @@ int main(int argc, char** argv) {
   
   FILE *gp;
   gp = popen("gnuplot -persist", "w");
-  fprintf(gp, "set terminal png\n");
-  fprintf(gp, "set output 'astar.png'\n");
-  fprintf(gp, "set nokey\n");
+	if(enable_save)
+	{
+  	fprintf(gp, "set terminal png\n");
+  	fprintf(gp, "set output 'astar.png'\n");
+  }
+	fprintf(gp, "set nokey\n");
   fprintf(gp, "set noborder\n");
   fprintf(gp, "set noxtics\n");
   fprintf(gp, "set noytics\n");

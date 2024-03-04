@@ -11,3 +11,4 @@ This is a repository in order to help someone who would like to implement a robo
 # Requirements
 * cmake
 * Eigen3
+* gnuplot
