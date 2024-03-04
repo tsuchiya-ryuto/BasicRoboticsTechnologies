@@ -12,10 +12,15 @@ class ObservationModel
 public:
   ObservationModel(){}
   
-  void set_observations(Eigen::VectorXd observation, Eigen::VectorXd variances){}
+  void set_observations(Eigen::VectorXd observation, Eigen::VectorXd variances)
+  {
+    obs = observation;
+    cov = variances;
+  }
+
   Eigen::MatrixXd observation_equation()
   {
-    Eigen::MatrixXd H;
+    Eigen::MatrixXd H(3,3);
     H << \
       1, 0, 0,
       0, 1, 0,
@@ -25,15 +30,17 @@ public:
 
   Eigen::MatrixXd observation_covariance()
   {
-    Eigen::MatrixXd Q;
+    Eigen::MatrixXd Q(3,3);
     Q << \
-      0.1, 0, 0,
-      0, 0.1, 0,
-      0, 0, 0.1;
+      cov(0), 0, 0,
+      0, cov(1), 0,
+      0, 0, cov(2);
     return Q;
   }
 
 private:
+  Eigen::VectorXd obs;
+  Eigen::VectorXd cov;
 
 };
 

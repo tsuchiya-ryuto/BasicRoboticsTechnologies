@@ -1,6 +1,7 @@
 #ifndef MOBILE_ROBOT_STATES_H
 #define MOBILE_ROBOT_STATES_H
 
+#include <cmath>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 
@@ -8,8 +9,14 @@ struct State
 {
   float x, y, theta;
   State(): x(0.0), y(0.0), theta(0.0) {}
-  State(float xx, float yy, float tt): x(xx), y(yy), theta(tt) {}
-
+  State(float xx, float yy, float tt): x(xx), y(yy), theta(tt)
+  {
+    if(theta > M_PI)
+      theta -= 2*M_PI;
+    if(theta < -M_PI)
+      theta += 2*M_PI;
+  }
+  
   bool operator== (const State& s)
   {
     float epsilon = 10e-6;
@@ -42,7 +49,7 @@ struct Control
   float v, w; // linear velocity and angular velocity
 
   Control(): v(0.0), w(0.0) {}
-  Control(float vv, float ww): v(v), w(ww) {}
+  Control(float vv, float ww): v(vv), w(ww){}
 
   bool operator== (const Control& u)
   {

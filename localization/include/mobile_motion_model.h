@@ -2,10 +2,10 @@
 #define ROBOT_MOTION_MODEL_H
 
 #include <cmath>
-
+#include <array>
+#include <iostream>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
-
 #include <mobile_robot_states.h>
 
 class MotionModel
@@ -18,6 +18,7 @@ public:
     state = State(xx(0), xx(1), xx(2)); // x, y, theta
     control = Control(uu(0), uu(1)); // linear velocity, angular velocity
     time = tt;
+    control_std = {0.3, 0.05, 0.1, 0.3};
   }
 
   Eigen::VectorXd state_transition()
@@ -28,20 +29,22 @@ public:
     float epsilon = 10e-6;
     if (abs(w) < epsilon)
     {
-      state.x += v * cos(state.theta);
-      state.y += v * sin(state.theta);
+      state.x += v * cos(state.theta) * time;
+      state.y += v * sin(state.theta) * time;
       state.theta += w * time;
     }
     else
     {
       float ct = cos(state.theta);
       float st = sin(state.theta);
-      float cwt = cos(state.theta + w*time);
-      float swt = sin(state.theta + w*time);
+      float ctw = cos(state.theta + w*time);
+      float stw = sin(state.theta + w*time);
 
-      state.x += v/w*(1);
-      state.y += v/w*(1);
+      state.x += v/w*(stw - st);
+      state.y += v/w*(-ctw + ct);
       state.theta += w*time;
+
+      //std::cout << "x: " << state.x << " y: " << state.y << " theta: " << state.theta << std::endl;
     }
 
     return state.convert_to_eigen();
@@ -49,22 +52,41 @@ public:
 
   Eigen::MatrixXd jacobian_for_control()
   {
-    Eigen::MatrixXd J(state.size(), control.size());
-
-    J << \
-      1, 1,
-      1, 1,
-      1, 1;
-    return J;
+    Eigen::MatrixXd A(state.size(), control.size());
+    float v, w;
+    v = control.v;
+    w = control.w;
+    float epsilon = 10e-6;
+    if(abs(w) < epsilon)
+      w = epsilon;
+    float ct = cos(state.theta);
+    float st = sin(state.theta);
+    float ctw = cos(state.theta + w*time);
+    float stw = sin(state.theta + w*time);
+    A << \
+      (stw - st)/w, -v/(w*w)*(stw - st) + v/w*time*ctw,
+      (-ctw + ct)/w, -v/(w*w)*(-ctw + ct) + v/w*time*stw,
+      0, time;
+    return A;
   }
 
   Eigen::MatrixXd jacobian_for_state()
   {
     Eigen::MatrixXd F(state.size(), state.size());
+    float v, w;
+    v = control.v;
+    w = control.w;
+    float epsilon = 10e-6;
+    if(abs(w) < epsilon)
+      w = epsilon;
+    float ct = cos(state.theta);
+    float st = sin(state.theta);
+    float ctw = cos(state.theta + w*time);
+    float stw = sin(state.theta + w*time);
 
     F <<  \
-      1, 0, 22,
-      0, 1, 22,
+      1, 0, v/w*(ctw - ct),
+      0, 1, v/w*(stw - st),
       0, 0, 1;
     return F;
   }
@@ -72,10 +94,22 @@ public:
   Eigen::MatrixXd control_covariance()
   {
     Eigen::MatrixXd M(control.size(), control.size());
-
+    float v, w;
+    v = control.v;
+    w = control.w;
+    float vv, vw, wv, ww;
+    vv = control_std.at(0)*control_std.at(0);
+    vw = control_std.at(1)*control_std.at(1);
+    wv = control_std.at(2)*control_std.at(2);
+    ww = control_std.at(3)*control_std.at(3);
+    /*
     M << \
-      11, 0,
-      0, 11;
+      vv*abs(v)/time + vw*abs(w)/time, 0,
+      0, wv*abs(v)/time + ww*abs(w)/time;
+    */
+    M << \
+      0.3, 0,
+      0, 0.3;
     return M;
   }
 
@@ -83,6 +117,7 @@ private:
   State state;
   Control control;
   float time;
+  std::array<float, 4> control_std;
 };
 
 #endif

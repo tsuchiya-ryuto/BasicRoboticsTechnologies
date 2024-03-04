@@ -5,6 +5,7 @@
 #include <eigen3/Eigen/Dense>
 #include <mobile_motion_model.h>
 #include <gps_observation_model.h>
+#include <iostream>
 
 using Vector = Eigen::VectorXd;
 using Matrix = Eigen::MatrixXd;
@@ -52,13 +53,18 @@ public:
     observation_model.set_observations(observation, observation_covariance);
     H = observation_model.observation_equation();
     Q = observation_model.observation_covariance();
+
+    // S is just for making easier to calculate Kalman Gain
     S = H*covariance*H.transpose() + Q;
     K = covariance * H.transpose() * S.inverse(); // Kalman Gain
 
-    mean += K * (mean - H*observation);
+    mean += K * (H*observation - mean);
     Matrix I = Matrix::Identity(mean.size(), mean.size());
     covariance = (I - K*H)*covariance;
   }
+
+  Vector get_mean() {return mean;}
+  Matrix get_covariance() {return covariance;}
 
 private:
   // parameters of gaussian
