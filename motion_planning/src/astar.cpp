@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <astar.h>
+
 using namespace std;
 
 vector<string> split(string& input, char delimiter)
@@ -36,7 +38,31 @@ int main(int argc, char** argv) {
   string map_path = "../config/map.csv";
   vector<vector<int>> grid_map;
   load_grid_map(grid_map, map_path);
+  AStar astar;
+  astar.set_map(grid_map);
+  Node start(3, 3);
+  Node goal(5, 30);
 
+  for(int i = 0; i < argc; i++)
+  {
+    if (std::string(argv[i]) == "-start")
+    {
+      start.x = std::stoi(argv[i+1]);
+      start.y = std::stoi(argv[i+2]);
+    }
+    if (std::string(argv[i]) == "-goal")
+    {
+      goal.x = std::stoi(argv[i+1]);
+      goal.y = std::stoi(argv[i+2]);
+    }
+  }
+
+  vector<Node> path;
+  if(astar.planning(start, goal))
+    path = astar.get_path();
+  else
+    cout << "No path found" << endl;
+  
   FILE *gp;
   gp = popen("gnuplot -persist", "w");
   fprintf(gp, "set nokey\n");
@@ -48,12 +74,18 @@ int main(int argc, char** argv) {
   //fprintf(gp, "set grid\n");
   fprintf(gp, "set size square\n");
   fprintf(gp, "set palette defined (0 'white', 1 'black')\n");
-  fprintf(gp, "splot '-' matrix with image\n"); 
+  fprintf(gp, "splot '-' matrix with image, '-' with points, '-' with lines \n"); 
   for(auto row : grid_map) {
     for(auto cell : row)
       fprintf(gp, "%d ", cell);
     fprintf(gp, "\n");
   }
+  fprintf(gp, "e\n");
+  fprintf(gp, "%d %d 0.5\n", start.x, start.y);
+  fprintf(gp, "%d %d 0.5\n", goal.x, goal.y);
+  fprintf(gp, "e\n");
+  for(auto node : path)
+    fprintf(gp, "%d %d 0.5\n", node.x, node.y);
   fprintf(gp, "e\n");
   //fprintf(gp, "set terminal png\n");
   return 0;
