@@ -14,7 +14,14 @@ using namespace std;
 class AStar
 {
 public:
-    AStar(){}
+    AStar(): enable_display(false){}
+		~AStar(){}
+
+		void set_display_configure(bool save, FILE *gnuplot)
+		{
+			enable_display = save;
+			gp = gnuplot;
+		}
 
     void set_map(vector<vector<int>>& grid_map) 
     { 
@@ -44,11 +51,13 @@ public:
             );
         };
 
-
         priority_queue<Node, vector<Node>, decltype(compare_cost)> open_set(compare_cost);
         unordered_map<int, Node> visited_nodes;
 
-        // start planning
+				if(enable_display)
+					display_node(start);
+        
+				// start planning
         open_set.push(start);
         auto actions = get_action();
 
@@ -57,12 +66,17 @@ public:
             shared_ptr<Node> current(new Node);
             *current = open_set.top();
             open_set.pop();
+						
+						//if(enable_display)
+						//	display_node(*current);
 
             int current_id = get_id(*current);
             visited_nodes.insert_or_assign(current_id, *current);
             
             if(*current == goal)
             {
+								if(enable_display)
+									fprintf(gp, "e\n");
                 calculate_path(*current);
                 return true;
             }
@@ -99,10 +113,16 @@ public:
                     else
                         continue;
                 }
+								if(enable_display)
+									display_node(next);
+									
                 open_set.push(next);
             }
         } while (!open_set.empty());
-        
+       	
+				if(enable_display)
+					fprintf(gp, "e\n");
+
         return false;
     }
 
@@ -133,6 +153,11 @@ public:
         return actions;
     }
 
+		void display_node(Node n)
+		{
+			fprintf(gp, "%d %d 0.5\n", n.x, n.y);
+		}
+
     bool is_valid_index(int ix, int iy) const
     {
         return (ix >= 0 && ix < width) && (iy >= 0 && iy < height);
@@ -148,7 +173,10 @@ private:
     vector<vector<int>> map;
     int height, width;
     vector<Node> path;
-
+		vector<Node> all_path;
+    
+		bool enable_display;
+		FILE *gp;
 };
 
 #endif // ASTAR_H
