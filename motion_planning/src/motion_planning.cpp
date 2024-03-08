@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   }
   fprintf(gp, "e\n");
 
-	AStar astar;
+  PathPlanning::AStar astar;
 	astar.set_display_configure(true, gp);
   astar.set_map(grid_map);
   Node start(3, 3);
