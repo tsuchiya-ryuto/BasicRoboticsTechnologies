@@ -22,7 +22,7 @@ void AStar::set_map(const vector<vector<int>>& grid_map)
     width = map[0].size();
 }
 
-bool AStar::planning(const Node& start, const Node& goal)
+bool AStar::planning(const Node<int>& start, const Node<int>& goal)
 {
     if(is_collision(start))
     {
@@ -36,7 +36,7 @@ bool AStar::planning(const Node& start, const Node& goal)
         return false;
     }
 
-    auto compare_cost = [](Node& lhs, Node& rhs)
+    auto compare_cost = [](Node<int>& lhs, Node<int>& rhs)
     {
         return (
             (lhs.cost() > rhs.cost()) ||
@@ -44,8 +44,8 @@ bool AStar::planning(const Node& start, const Node& goal)
         );
     };
 
-    priority_queue<Node, vector<Node>, decltype(compare_cost)> open_set(compare_cost);
-    unordered_map<int, Node> visited_nodes;
+    priority_queue<Node<int>, vector<Node<int>>, decltype(compare_cost)> open_set(compare_cost);
+    unordered_map<int, Node<int>> visited_nodes;
 
             if(enable_display)
                 display_node(start);
@@ -56,7 +56,7 @@ bool AStar::planning(const Node& start, const Node& goal)
 
     do
     {
-        shared_ptr<Node> current(new Node);
+        shared_ptr<Node<int>> current(new Node<int>);
         *current = open_set.top();
         open_set.pop();
                     
@@ -79,7 +79,7 @@ bool AStar::planning(const Node& start, const Node& goal)
             int x,y;
             x = current->x + action.dx;
             y = current->y + action.dy;
-            Node next(x,y);
+            Node<int> next(x,y);
             next.parent = current;
             int next_id = get_id(next);
 
@@ -97,7 +97,7 @@ bool AStar::planning(const Node& start, const Node& goal)
             if(visited_nodes.find(next_id) != visited_nodes.end())
             {
                 auto previous_it = visited_nodes.find(next_id);
-                Node previous = previous_it->second;
+                Node<int> previous = previous_it->second;
                 if(next.cost_so_far < previous.cost_so_far)
                 {
                     visited_nodes.erase(next_id);
@@ -119,14 +119,14 @@ bool AStar::planning(const Node& start, const Node& goal)
     return false;
 }
 
-float AStar::heuristic_cost(const Node& goal, const Node& node)
+float AStar::heuristic_cost(const Node<int>& goal, const Node<int>& node)
 {
     return abs(goal.x - node.x) + abs(goal.y - node.y);
 }
 
-void AStar::calculate_path(const Node& goal)
+void AStar::calculate_path(const Node<int>& goal)
 {
-    Node node = goal;
+    Node<int> node = goal;
     path.push_back(goal);
     do{
         node = *node.parent;
@@ -134,11 +134,11 @@ void AStar::calculate_path(const Node& goal)
     }while(node.parent != nullptr);
 }
 
-vector<Node> AStar::get_path() { return path; }
+vector<Node<int>> AStar::get_path() { return path; }
 
-vector<Action> AStar::get_action()
+vector<Action<int>> AStar::get_action()
 {
-    vector<Action> actions {
+    vector<Action<int>> actions {
             {-1, 1}, {0, 1}, {1, 1},
             {-1, 0},          {1, 0},
             {-1, -1}, {0, -1}, {1, -1}
@@ -146,7 +146,7 @@ vector<Action> AStar::get_action()
     return actions;
 }
 
-void AStar::display_node(const Node& n)
+void AStar::display_node(const Node<int>& n)
 {
 	fprintf(gp, "%d %d 0.5\n", n.x, n.y);
 }
@@ -156,11 +156,11 @@ bool AStar::is_valid_index(const int& ix, const int& iy) const
     return (ix >= 0 && ix < width) && (iy >= 0 && iy < height);
 }
 
-bool AStar::is_collision(const Node& node) const
+bool AStar::is_collision(const Node<int>& node) const
 { 
     return map.at(node.y).at(node.x) == 1;
 }
 
-int AStar::get_id(const Node& node) { return node.x + node.y * width; }
+int AStar::get_id(const Node<int>& node) { return node.x + node.y * width; }
 
 } // namespace PathPlanning

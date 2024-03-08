@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
   PathPlanning::AStar astar;
 	astar.set_display_configure(true, gp);
   astar.set_map(grid_map);
-  Node start(3, 3);
-  Node goal(45, 45);
+  Node<int> start(3, 3);
+  Node<int> goal(45, 45);
 
   for(int i = 0; i < argc; i++)
   {
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
   fprintf(gp, "%d %d 0.5\n", goal.x, goal.y);
   fprintf(gp, "e\n");
 
-  vector<Node> path;
+  vector<Node<int>> path;
   if(astar.planning(start, goal))
     path = astar.get_path();
   else

@@ -21,24 +21,24 @@ public:
 
 	void set_display_configure(bool save, FILE *gnuplot);
     void set_map(const vector<vector<int>>& grid_map);
-    bool planning(const Node& start, const Node& goal);
-    float heuristic_cost(const Node& goal, const Node& node);
-    void calculate_path(const Node& goal);
+    bool planning(const Node<int>& start, const Node<int>& goal);
+    float heuristic_cost(const Node<int>& goal, const Node<int>& node);
+    void calculate_path(const Node<int>& goal);
 
     bool is_valid_index(const int& ix, const int& iy) const;
-    bool is_collision(const Node& node) const;
-	void display_node(const Node& n);
+    bool is_collision(const Node<int>& node) const;
+	void display_node(const Node<int>& n);
     
-    int get_id(const Node& node);
-    vector<Node> get_path();
-    vector<Action> get_action();
+    int get_id(const Node<int>& node);
+    vector<Node<int>> get_path();
+    vector<Action<int>> get_action();
 
 
 private:
     vector<vector<int>> map;
     int height, width;
-    vector<Node> path;
-	vector<Node> all_path;
+    vector<Node<int>> path;
+	vector<Node<int>> all_path;
     
 	bool enable_display;
 	FILE *gp;
