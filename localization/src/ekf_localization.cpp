@@ -1,4 +1,4 @@
-#include <extended_kalman_filter.h>
+#include <filter/extended_kalman_filter.h>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 
@@ -13,10 +13,10 @@ int main(int argc, char** argv)
   state << 0.0, 0.0, 0.0;
   Eigen::MatrixXd covariance(3,3);
   covariance << \
-    0.3, 0.0, 0.0,
-    0.0, 0.3, 0.0,
-    0.0, 0.0, 0.3*M_PI;
-  BayesianFilter::ExtendedKalmanFilter ekf(state, covariance);
+    0.05, 0.0, 0.0,
+    0.0, 0.05, 0.0,
+    0.0, 0.0, 0.05*M_PI;
+  Filter::ExtendedKalmanFilter ekf(state, covariance);
 
   FILE *gp;
   gp = popen("gnuplot -persist", "w");
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   // uniform motion
   float v, w;
   v = 0.5;
-  w = 1.0;
+  w = 0.3;
   float time_interval = 0.01;
   Eigen::VectorXd ideal_control(2);
   ideal_control << v, w;
@@ -41,8 +41,8 @@ int main(int argc, char** argv)
   MotionModel motion_model;
   std::random_device gen;
   std::default_random_engine engine(gen());
-  std::normal_distribution<float> vel_dist(0.0, 0.3);
-  std::normal_distribution<float> ang_dist(0.0, 0.3);
+  std::normal_distribution<float> vel_dist(0.0, 0.1);
+  std::normal_distribution<float> ang_dist(0.0, 0.1*M_PI);
 
   Eigen::VectorXd obs_cov(3);
   obs_cov << 0.05, 0.05, 0.2*M_PI;
