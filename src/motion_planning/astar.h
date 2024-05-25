@@ -2,7 +2,7 @@
 #define ASTAR_H
 
 #include <vector>
-#include <nodes.h>
+#include "nodes.h"
 
 #include <iostream>
 #include <unordered_map>

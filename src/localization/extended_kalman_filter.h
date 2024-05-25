@@ -3,8 +3,8 @@
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
-#include <model/mobile_motion_model.h>
-#include <model/gps_observation_model.h>
+#include "mobile_motion_model.h"
+#include "gps_observation_model.h"
 #include <iostream>
 
 using Vector = Eigen::VectorXd;

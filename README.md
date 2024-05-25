@@ -4,17 +4,17 @@ And it is for relearning their technologies to me.
 
 # How to compile
 ```
-$ cd "package name" # (example $ cd localization)
+$ cd <path_to_repository>/BasicRoboticsTechnologies/
 $ mkdir build
 $ cd build
 $ cmake ..
 $ make
 ```
 
-# Requirements
-* cmake <br>
-  `$ sudo apt install build-essential`
-* Eigen3 <br>
+# Installation of requirements in Ubuntu
+* A C++17 compiler
+* CMake
+* Eigen3
   `$ sudo apt install libeigen3-dev`
-* gnuplot <br>
+* GNUPLOT
   `$ sudo apt install gnuplot`

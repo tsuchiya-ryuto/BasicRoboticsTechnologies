@@ -1,4 +1,4 @@
-#include <model/gps_observation_model.h>
+#include "gps_observation_model.h"
 
 void ObservationModel::set_observations(const Eigen::VectorXd& observation, const Eigen::VectorXd& variances)
 {

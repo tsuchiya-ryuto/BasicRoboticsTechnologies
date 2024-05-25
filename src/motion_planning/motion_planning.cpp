@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <astar.h>
+#include "astar.h"
 
 using namespace std;
 

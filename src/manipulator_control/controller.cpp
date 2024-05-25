@@ -1,8 +1,8 @@
 #include <cmath>
 #include <iostream>
 
-#include <manipulator/manipulator_2d.h>
-#include <controller/pid_controller.h>
+#include "manipulator_2d.h"
+#include "pid_controller.h"
 
 void display_arm(FILE *gp, std::vector<float> target, std::vector<std::vector<float>> joint_positions)
 {
