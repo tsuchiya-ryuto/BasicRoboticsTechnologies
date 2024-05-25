@@ -12,9 +12,14 @@ $ make
 ```
 
 # Installation of requirements in Ubuntu
+## Compiler
 * A C++17 compiler
 * CMake
-* Eigen3
+## Linear Alebra Calculation
+* Eigen3 <br>
   `$ sudo apt install libeigen3-dev`
-* GNUPLOT
+## Visualizer
+* GNUPLOT <br>
   `$ sudo apt install gnuplot`
+* Qt <br>
+  now planning to use it instead of GNUPLOT (still studying...)
